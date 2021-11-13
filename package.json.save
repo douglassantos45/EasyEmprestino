@@ -1,0 +1,24 @@
+{
+  "name": "EasyEmprestino",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:douglassantos45/EasyEmprestino.git",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon
+ src/server.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.1",
+    "nodemon": "^2.0.15",
+    "sucrase": "^3.20.3"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
