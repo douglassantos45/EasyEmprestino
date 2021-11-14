@@ -5,9 +5,11 @@ import dotenv from 'dotenv/config';
 const app = express();
 
 const PORT = process.env.PORT || 8080;
-
+app.use(express.json());
 app.get('/', (req, res) => {
-  res.send('Ok');
+  res.json({
+    msg: 'Message',
+  });
 });
 
 app.listen(PORT, () => {
