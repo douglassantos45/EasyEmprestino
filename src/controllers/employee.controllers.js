@@ -4,7 +4,17 @@ import db from '../database/connections';
 
 export default class EmployeeController {
   async index(req = Request, res = Response) {
-    res.send('employee controller.');
+    try {
+      const data = await db.select().table('employee');
+
+      res.json(data);
+    } catch (err) {
+      console.log(`Erro no knowledge_areas_controller ${err}`);
+      res.status(500).json({
+        error: err,
+        message: 'Erro não esperado.',
+      });
+    }
   }
 
   async create(req = Request, res = Response) {
