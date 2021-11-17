@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import express from 'express';
 // eslint-disable-next-line no-unused-vars
-
+// eslint-disable-next-line no-unused-vars
 import dotenv from 'dotenv/config';
 import routes from './routes';
 
