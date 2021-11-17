@@ -10,7 +10,7 @@ const employeeController = new EmployeeController();
 routes.get('/knowledge_areas', knowledgeAreasController.index);
 
 /* Employee Controller */
-routes.get('employees', employeeController.index);
-routes.post('employees', employeeController.create);
+routes.get('/employees', employeeController.index);
+routes.post('/employees', employeeController.create);
 
 export default routes;
