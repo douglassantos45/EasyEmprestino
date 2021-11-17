@@ -12,5 +12,5 @@ app.use(express.json());
 app.use(routes);
 
 app.listen(PORT, () => {
-  console.log('Rodando express ');
+  console.log(`🚀 server running on the port ${PORT}`);
 });
