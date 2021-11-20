@@ -9,7 +9,7 @@ export default class EmployeeController {
 
       res.json(data);
     } catch (err) {
-      console.log(`Erro no knowledge_areas_controller ${err}`);
+      console.log(`Erro no employee controller ${err}`);
       res.status(500).json({
         error: err,
         message: 'Erro não esperado.',
@@ -29,7 +29,7 @@ export default class EmployeeController {
       res.status(201).send();
     } catch (err) {
       await trx.rollback(); //Desfazendo qualquer erro
-      console.log(`Erro no knowledge_areas_controller ${err}`);
+      console.log(`Erro no employee controller ${err}`);
       res.status(500).json({
         error: err,
         message: 'Erro não esperado.',
