@@ -2,6 +2,20 @@ import { Request, Response } from 'express';
 import db from '../database/connections';
 
 export default class StudentController {
+  async index(req = Request, res = Response) {
+    try {
+      const students = await db.select().from().table('students');
+
+      res.status(200).json(students);
+    } catch (err) {
+      console.log(`Erro no student controller ${err}`);
+      res.status(500).json({
+        error: err,
+        message: 'Ocorreu um erro inesperado',
+      });
+    }
+  }
+
   async create(req = Request, res = Response) {
     const data = req.body;
     const trx = await db.transaction();
