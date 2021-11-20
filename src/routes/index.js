@@ -8,6 +8,7 @@ const knowledgeAreasController = new KnowledgeAreasController();
 const employeeController = new EmployeeController();
 
 routes.get('/knowledge_areas', knowledgeAreasController.index);
+routes.post('/knowledge_areas/:id', knowledgeAreasController.create);
 
 /* Employee Controller */
 routes.get('/employees', employeeController.index);
