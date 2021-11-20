@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import db from '../database/connections';
 
+import handleDateConvertMs from '../utils/dateConvertMS';
+
 export default class LendsController {
   async index(req = Request, res = Response) {
     try {
@@ -19,13 +21,18 @@ export default class LendsController {
   }
 
   async create(req = Request, res = Response) {
-    const { termino, publicationsId } = req.body;
+    const { publicationsId } = req.body;
     const employeeId = req.params.id;
 
     const trx = await db.transaction();
     try {
+      const [date] = await trx('lends').select('inicio');
+      const { inicio } = date;
+
+      const endDate = handleDateConvertMs(inicio) + 604800000;
+
       await trx('lends').insert({
-        termino,
+        termino: endDate,
         employee_id: employeeId,
         publication_id: publicationsId,
       });
