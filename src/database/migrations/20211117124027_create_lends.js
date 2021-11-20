@@ -5,10 +5,7 @@
 exports.up = function (knex) {
   return knex.schema.createTable('lends', table => {
     table.increments('id').primary();
-    table
-      .timestamp('inicio')
-      .defaultTo(knex.raw('CURRENT_TIMESTAMP'))
-      .notNullable();
+    table.string('inicio').notNullable();
     table.string('termino').notNullable();
 
     //Criando Relação com funcionário
