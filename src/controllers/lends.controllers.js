@@ -25,14 +25,10 @@ export default class LendsController {
     const employeeId = req.params.id;
 
     const trx = await db.transaction();
+    const initDate = new Date();
     try {
-      const [date] = await trx('lends').select('inicio');
-      const { inicio } = date;
-
-      const endDate = handleDateConvertMs(inicio) + 604800000;
-
       await trx('lends').insert({
-        termino: endDate,
+        termino: handleDateConvertMs(initDate) + 604800000,
         employee_id: employeeId,
         publication_id: publicationsId,
       });
