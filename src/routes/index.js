@@ -24,7 +24,7 @@ routes.get('/students', studentController.index);
 routes.post('/students', studentController.create);
 
 /* Publication Controller */
-routes.get('/students', publicationController.index);
-routes.post('/students/:id', publicationController.create);
+routes.get('/publications', publicationController.index);
+routes.post('/publications/:id', publicationController.create);
 
 export default routes;
