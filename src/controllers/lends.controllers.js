@@ -6,11 +6,26 @@ import handleDateConvertMs from '../utils/dateConvertMS';
 export default class LendsController {
   async index(req = Request, res = Response) {
     try {
-      const data = await db('lends')
+      const publications = await db('lends')
         .join('publications', 'lends.publication_id', '=', 'publications.id')
-        .select(['lends.*', 'publications.*']);
+        .join(
+          'knowledge_areas',
+          'publications.knowledge_area_id',
+          '=',
+          'knowledge_areas.id',
+        )
+        .join('employee', 'lends.employee_id', '=', 'employee.id')
+        .select([
+          'lends.*',
+          'publications.*',
+          'knowledge_areas.*',
+          'employee.nome',
+        ]);
 
-      res.status(200).json(data);
+      publications.map(item => {
+        delete item.id, delete item.knowledge_area_id;
+      });
+      res.status(200).json(publications);
     } catch (err) {
       console.log(`Erro no index lends controller ${err}`);
       res.status(500).json({
@@ -28,9 +43,11 @@ export default class LendsController {
 
     const trx = await db.transaction();
     try {
-      const publication = await trx('lends')
-        .join('publications', 'lends.publication_id', '=', 'publications.id')
-        .select(['lends.*', 'publications.*']);
+      const [publication] = await trx('lends').where(
+        'lends.publication_id',
+        '=',
+        publicationsId,
+      );
 
       if (!publication) {
         await trx('lends').insert({
@@ -40,10 +57,10 @@ export default class LendsController {
           publication_id: publicationsId,
         });
 
-        await trx.commit();
-        return res.status(201).send();
+        res.status(201).send();
       }
 
+      await trx.commit();
       res.status(204).send();
     } catch (err) {
       console.log(`Erro no index create controller ${err}`);
