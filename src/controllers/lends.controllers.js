@@ -6,10 +6,9 @@ import handleDateConvertMs from '../utils/dateConvertMS';
 export default class LendsController {
   async index(req = Request, res = Response) {
     try {
-      const data = await db
-        .select()
-        .table('publicatons')
-        .innerJoin('lends', 'lends.publication_id', 1);
+      const data = await db('lends')
+        .join('publications', 'lends.publication_id', '=', 'publications.id')
+        .select(['lends.*', 'publications.*']);
 
       res.status(200).json(data);
     } catch (err) {
