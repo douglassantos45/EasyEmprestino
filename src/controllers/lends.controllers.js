@@ -28,16 +28,23 @@ export default class LendsController {
 
     const trx = await db.transaction();
     try {
-      await trx('lends').insert({
-        inicio: newDateMs,
-        termino: newDateMs + 604800000,
-        employee_id: employeeId,
-        publication_id: publicationsId,
-      });
+      const publication = await trx('lends')
+        .join('publications', 'lends.publication_id', '=', 'publications.id')
+        .select(['lends.*', 'publications.*']);
 
-      await trx.commit();
+      if (!publication) {
+        await trx('lends').insert({
+          inicio: newDateMs,
+          termino: newDateMs + 604800000,
+          employee_id: employeeId,
+          publication_id: publicationsId,
+        });
 
-      res.status(201).send();
+        await trx.commit();
+        return res.status(201).send();
+      }
+
+      res.status(204).send();
     } catch (err) {
       console.log(`Erro no index create controller ${err}`);
       res.status(500).json({
