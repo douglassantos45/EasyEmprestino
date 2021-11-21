@@ -7,8 +7,6 @@ export default class LendsController {
   async index(req = Request, res = Response) {
     try {
       const data = await db.select().from().table('lends');
-      /* .join('publications', 'lends.publications_id', '=', 'publications.id')
-        .select(['lends.*', 'publications.*']); */
 
       res.status(200).json(data);
     } catch (err) {
