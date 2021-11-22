@@ -40,7 +40,6 @@ export default class LendsController {
     const employeeId = req.params.id;
 
     const newDateMs = handleDateConvertMs(new Date());
-
     const trx = await db.transaction();
     try {
       const [publication] = await trx('lends').where(
@@ -56,13 +55,13 @@ export default class LendsController {
           employee_id: employeeId,
           publication_id: publicationsId,
         });
-
         res.status(201).send();
+      } else {
+        res.status(204).send();
       }
-
       await trx.commit();
-      res.status(204).send();
     } catch (err) {
+      await trx.rollback();
       console.log(`Erro no index create controller ${err}`);
       res.status(500).json({
         error: err,
