@@ -24,6 +24,14 @@ exports.up = function (knex) {
       .inTable('publications')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
+    //Criando Relação com estudante
+    table
+      .integer('student_id')
+      .notNullable()
+      .references('id')
+      .inTable('students')
+      .onUpdate('CASCADE')
+      .onDelete('CASCADE');
   });
 };
 
