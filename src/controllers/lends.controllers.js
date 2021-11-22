@@ -8,17 +8,19 @@ export default class LendsController {
     try {
       const publications = await db('lends')
         .join('publications', 'lends.publication_id', '=', 'publications.id')
+        .join('students', 'lends.student_id', '=', 'students.id')
+        .join('employee', 'lends.employee_id', '=', 'employee.id')
         .join(
           'knowledge_areas',
           'publications.knowledge_area_id',
           '=',
           'knowledge_areas.id',
         )
-        .join('employee', 'lends.employee_id', '=', 'employee.id')
         .select([
           'lends.*',
           'publications.*',
-          'knowledge_areas.*',
+          ['students.nome', 'students.matricula'],
+          'knowledge_areas.tipo',
           'employee.nome',
         ]);
 
