@@ -9,7 +9,6 @@ export default class LendsController {
       const publications = await db('lends')
         .join('publications', 'lends.publication_id', '=', 'publications.id')
         .join('students', 'lends.student_id', '=', 'students.id')
-        .join('employee', 'lends.employee_id', '=', 'employee.id')
         .join(
           'knowledge_areas',
           'publications.knowledge_area_id',
@@ -17,17 +16,39 @@ export default class LendsController {
           'knowledge_areas.id',
         )
         .select([
-          'lends.*',
+          'students.matricula',
+          'students.nome',
           'publications.*',
-          ['students.nome', 'students.matricula'],
           'knowledge_areas.tipo',
-          'employee.nome',
+          'lends.inicio',
+          'lends.termino',
         ]);
-
-      publications.map(item => {
-        delete item.id, delete item.knowledge_area_id;
+      const data = publications.map(response => {
+        const newResponse = [
+          {
+            student: {
+              nome: response.nome,
+              matricula: response.matricula,
+            },
+            publication: {
+              cota: response.cota,
+              titulo: response.titulo,
+              autor: response.autor,
+              area_conhecimento: response.tipo,
+            },
+            lends: {
+              inicio: response.inicio,
+              termino: response.termino,
+            },
+          },
+        ];
+        return newResponse;
       });
-      res.status(200).json(publications);
+
+      /* publications.map(item => {
+        delete item.id, delete item.knowledge_area_id, delete item.employee_id;
+      }); */
+      res.status(200).json(data);
     } catch (err) {
       console.log(`Erro no index lends controller ${err}`);
       res.status(500).json({
@@ -38,7 +59,7 @@ export default class LendsController {
   }
 
   async create(req = Request, res = Response) {
-    const { publicationsId } = req.body;
+    const { publicationsId, studentId } = req.body;
     const employeeId = req.params.id;
 
     const newDateMs = handleDateConvertMs(new Date());
@@ -56,6 +77,7 @@ export default class LendsController {
           termino: newDateMs + 604800000,
           employee_id: employeeId,
           publication_id: publicationsId,
+          student_id: studentId,
         });
         res.status(201).send();
       } else {
