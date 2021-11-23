@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import db from '../database/connections';
 
 import handleDateConvertMs from '../utils/dateConvertMS';
+import msToDate from '../utils/msToDate';
 
 export default class LendsController {
   async index(req = Request, res = Response) {
