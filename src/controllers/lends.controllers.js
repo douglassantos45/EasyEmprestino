@@ -8,6 +8,7 @@ export default class LendsController {
     try {
       const publications = await db('lends')
         .join('publications', 'lends.publication_id', '=', 'publications.id')
+        .join('employee', 'lends.employee_id', '=', 'employee.id')
         .join('students', 'lends.student_id', '=', 'students.id')
         .join(
           'knowledge_areas',
@@ -16,17 +17,19 @@ export default class LendsController {
           'knowledge_areas.id',
         )
         .select([
+          { student: 'students.nome' },
           'students.matricula',
-          'students.nome',
+          'employee.*',
           'publications.*',
           'knowledge_areas.tipo',
           'lends.inicio',
           'lends.termino',
         ]);
-      const data = publications.map(response => [
-        {
+
+      const data = publications.map(response => {
+        const newResponse = {
           student: {
-            nome: response.nome,
+            nome: response.student,
             matricula: response.matricula,
           },
           publication: {
@@ -35,12 +38,17 @@ export default class LendsController {
             autor: response.autor,
             area_conhecimento: response.tipo,
           },
-          lends: {
-            inicio: response.inicio,
-            termino: response.termino,
+          employee: {
+            nome: response.nome,
           },
-        },
-      ]);
+          lends: {
+            inicio: msToDate(response.inicio),
+            termino: msToDate(response.termino),
+          },
+        };
+
+        return newResponse;
+      });
 
       /* publications.map(item => {
         delete item.id, delete item.knowledge_area_id, delete item.employee_id;
