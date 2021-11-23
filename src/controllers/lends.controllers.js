@@ -23,27 +23,24 @@ export default class LendsController {
           'lends.inicio',
           'lends.termino',
         ]);
-      const data = publications.map(response => {
-        const newResponse = [
-          {
-            student: {
-              nome: response.nome,
-              matricula: response.matricula,
-            },
-            publication: {
-              cota: response.cota,
-              titulo: response.titulo,
-              autor: response.autor,
-              area_conhecimento: response.tipo,
-            },
-            lends: {
-              inicio: response.inicio,
-              termino: response.termino,
-            },
+      const data = publications.map(response => [
+        {
+          student: {
+            nome: response.nome,
+            matricula: response.matricula,
           },
-        ];
-        return newResponse;
-      });
+          publication: {
+            cota: response.cota,
+            titulo: response.titulo,
+            autor: response.autor,
+            area_conhecimento: response.tipo,
+          },
+          lends: {
+            inicio: response.inicio,
+            termino: response.termino,
+          },
+        },
+      ]);
 
       /* publications.map(item => {
         delete item.id, delete item.knowledge_area_id, delete item.employee_id;
