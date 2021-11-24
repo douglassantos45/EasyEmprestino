@@ -1,10 +1,9 @@
 import nodemailer from 'nodemailer';
 
 const remetente = nodemailer.createTransport({
-  host: '',
-  service: '',
+  host: 'smpt.google.com',
   port: 587,
-  secure: true,
+  secure: false,
   auth: {
     user: 'seuemail',
     pass: 'suaSenha',

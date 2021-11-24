@@ -5,13 +5,16 @@
 import remetente from '../config/sendMail';
 
 export default class SendMail {
-  send(email) {
-    try {
-      remetente.sendMail(email);
-      console.log('Email enviada com sucesso');
-    } catch (error) {
-      console.log(`Erro: ${error}`);
-      throw new Error('Erro ao enviar email');
-    }
+  async send(email) {
+    await remetente
+      .sendMail(email)
+      .then(response => {
+        console.log(response);
+        console.log('Email enviada com sucesso!');
+      })
+      .catch(error => {
+        console.log(error);
+        console.log('Erro ao enviar a mensagem!');
+      });
   }
 }
