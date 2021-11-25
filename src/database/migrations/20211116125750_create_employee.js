@@ -3,7 +3,7 @@
 
 exports.up = function (knex) {
   return knex.schema.createTable('employees', table => {
-    table.uuid('id').primary();
+    table.string('id').notNullable();
     table.string('name').notNullable();
     table.string('cpf').notNullable();
     table.string('rg').notNullable();

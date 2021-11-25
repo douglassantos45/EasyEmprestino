@@ -4,7 +4,7 @@
 
 exports.up = function (knex) {
   return knex.schema.createTable('lends', table => {
-    table.uuid('id').primary();
+    table.string('id').notNullable();
     table.string('start').notNullable();
     table.string('end').notNullable();
 

@@ -4,7 +4,7 @@
 
 exports.up = function (knex) {
   return knex.schema.createTable('knowledge_areas', table => {
-    table.uuid('id').primary();
+    table.string('id').notNullable();
     table.string('type').notNullable();
 
     //Criando Relação com Funcionários

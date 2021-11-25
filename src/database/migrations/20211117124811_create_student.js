@@ -3,7 +3,7 @@
 
 exports.up = function (knex) {
   return knex.schema.createTable('students', table => {
-    table.uuid('id').primary();
+    table.string('id').notNullable();
     table.string('name').notNullable();
     table.string('cpf').notNullable();
     table.string('registration').notNullable();
