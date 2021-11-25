@@ -85,6 +85,20 @@ export default class LendsController {
           publication_id: publicationsId,
           student_id: studentId,
         });
+        await trx.commit();
+        /* const sendMail = new SendMail();
+        const [studentEmail] = await db('lends')
+          .where('lends.student_id', '=', studentId)
+          .join('students', 'lends.student_id', '=', 'students.id')
+          .select(['students.email']);
+
+        sendMail.send({
+          from: 'emailparatestesunitarios@gmail.com',
+          to: studentEmail.email,
+          subject: 'Hello ✔',
+          text: 'Hello world?',
+          html: '<b>Hello world?</b>',
+        }); */
         res.status(201).send();
       } else {
         res.status(204).send();
