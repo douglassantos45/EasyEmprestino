@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
 import JWT from 'jsonwebtoken';
-import { Request, response, Response } from 'express';
+import { Request, Response } from 'express';
 import db from '../database/connections';
 import MessageResponse from '../utils/messagesReponse';
 
