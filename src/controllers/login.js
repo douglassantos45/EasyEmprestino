@@ -7,14 +7,15 @@ export default class LoginController {
   async post(req = Request, res = Response) {
     try {
       const { email, senha } = req.body;
+
       const [data] = await db('employee').where('email', '=', email);
-      if (!data || data.senha != senha) {
+
+      if (!data || data.cpf !== senha) {
         return res.status(401).json({
           message: 'Usuário ou senha inválidos',
         });
       }
 
-      console.log(email, senha);
       res.json(data);
     } catch (err) {
       console.log(`Erro no login ${err}`);
