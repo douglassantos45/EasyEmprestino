@@ -5,6 +5,7 @@ import StudentController from '../controllers/student.controller';
 import PublicationController from '../controllers/publications.controllers';
 import LendsController from '../controllers/lends.controllers';
 import LoginController from '../controllers/login.controllers';
+import authToken from '../middlewares/authenticate';
 
 const routes = Router();
 
@@ -16,24 +17,24 @@ const leadsController = new LendsController();
 const loginController = new LoginController();
 
 /* ROUTES */
-routes.get('/knowledge_areas', knowledgeAreasController.index);
-routes.post('/knowledge_areas/:id', knowledgeAreasController.create);
+routes.get('/knowledge_areas', authToken, knowledgeAreasController.index);
+routes.post('/knowledge_areas/:id', authToken, knowledgeAreasController.create);
 
 /* Employee Controller */
 routes.get('/employees', employeeController.index);
 routes.post('/employees', employeeController.create);
 
 /* Student Controller */
-routes.get('/students', studentController.index);
-routes.post('/students', studentController.create);
+routes.get('/students', authToken, studentController.index);
+routes.post('/students', authToken, studentController.create);
 
 /* Publication Controller */
-routes.get('/publications', publicationController.index);
-routes.post('/publications/:id', publicationController.create);
+routes.get('/publications', authToken, publicationController.index);
+routes.post('/publications/:id', authToken, publicationController.create);
 
 /* Lends Controller */
-routes.get('/lends', leadsController.index);
-routes.post('/lends/:id', leadsController.create);
+routes.get('/lends', authToken, leadsController.index);
+routes.post('/lends/:id', authToken, leadsController.create);
 
 /* Login Controller */
 routes.post('/login', loginController.post);
