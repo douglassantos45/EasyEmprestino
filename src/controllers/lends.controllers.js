@@ -3,13 +3,16 @@ import db from '../database/connections';
 
 import handleDateConvertMs from '../utils/dateConvertMS';
 import msToDate from '../utils/msToDate';
+import MessageResponse from '../utils/messagesReponse';
 
-export default class LendsController {
+const response = new MessageResponse();
+
+export default class LendsControllers {
   async index(req = Request, res = Response) {
     try {
       const publications = await db('lends')
         .join('publications', 'lends.publication_id', '=', 'publications.id')
-        .join('employee', 'lends.employee_id', '=', 'employee.id')
+        .join('employees', 'lends.employee_id', '=', 'employees.id')
         .join('students', 'lends.student_id', '=', 'students.id')
         .join(
           'knowledge_areas',
@@ -18,48 +21,49 @@ export default class LendsController {
           'knowledge_areas.id',
         )
         .select([
-          { student: 'students.nome' },
-          'students.matricula',
-          'employee.*',
+          { student: 'students.name' },
+          'students.*',
+          'employees.*',
           'publications.*',
-          'knowledge_areas.tipo',
-          'lends.inicio',
-          'lends.termino',
+          'knowledge_areas.type',
+          'lends.start',
+          'lends.end',
         ]);
 
-      const data = publications.map(response => {
+      const publicationsResponse = publications.map(response => {
         const newResponse = {
           student: {
-            nome: response.student,
-            matricula: response.matricula,
+            name: response.student,
+            registration: response.registration,
+            mail: response.mail,
           },
           publication: {
-            cota: response.cota,
-            titulo: response.titulo,
-            autor: response.autor,
-            area_conhecimento: response.tipo,
+            quota: response.quota,
+            title: response.title,
+            authors: response.authors,
+            knowledge_areas: response.type,
           },
           employee: {
-            nome: response.nome,
+            name: response.name,
           },
           lends: {
-            inicio: msToDate(response.inicio),
-            termino: msToDate(response.termino),
+            start: msToDate(response.start),
+            end: msToDate(response.end),
           },
         };
 
         return newResponse;
       });
 
-      /* publications.map(item => {
-        delete item.id, delete item.knowledge_area_id, delete item.employee_id;
-      }); */
-      res.status(200).json(data);
+      res.status(200).json({
+        error: false,
+        data: publicationsResponse,
+      });
     } catch (err) {
-      console.log(`Erro no index lends controller ${err}`);
+      console.log(`Error in index lends controller ${err}`);
       res.status(500).json({
-        error: err,
-        message: 'Ocorreu um erro interno',
+        error: true,
+        message: response.showMessage(500),
       });
     }
   }
@@ -71,45 +75,39 @@ export default class LendsController {
     const newDateMs = handleDateConvertMs(new Date());
     const trx = await db.transaction();
     try {
-      const [publication] = await trx('lends').where(
+      const [borrowedPublications] = await trx('lends').where(
         'lends.publication_id',
         '=',
         publicationsId,
       );
 
-      if (!publication) {
+      if (!borrowedPublications) {
         await trx('lends').insert({
-          inicio: newDateMs,
-          termino: newDateMs + 604800000,
+          start: newDateMs,
+          end: newDateMs + 604800000,
           employee_id: employeeId,
           publication_id: publicationsId,
           student_id: studentId,
         });
         await trx.commit();
-        /* const sendMail = new SendMail();
-        const [studentEmail] = await db('lends')
-          .where('lends.student_id', '=', studentId)
-          .join('students', 'lends.student_id', '=', 'students.id')
-          .select(['students.email']);
 
-        sendMail.send({
-          from: 'emailparatestesunitarios@gmail.com',
-          to: studentEmail.email,
-          subject: 'Hello ✔',
-          text: 'Hello world?',
-          html: '<b>Hello world?</b>',
-        }); */
         res.status(201).send();
       } else {
-        res.status(204).send();
+        res.status(204).json({
+          error: false,
+          message: response.showMessage(
+            204,
+            'This publication has already been borrowed',
+          ),
+        });
       }
       await trx.commit();
     } catch (err) {
       await trx.rollback();
-      console.log(`Erro no index create controller ${err}`);
+      console.log(`Error in index create controller ${err}`);
       res.status(500).json({
-        error: err,
-        message: 'Ocorreu um erro interno',
+        error: true,
+        message: response.showMessage(500),
       });
     }
   }

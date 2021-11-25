@@ -1,26 +1,29 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
 import JWT from 'jsonwebtoken';
-import { Request, Response } from 'express';
+import { Request, response, Response } from 'express';
 import db from '../database/connections';
+import MessageResponse from '../utils/messagesReponse';
+
+const response = new MessageResponse();
 
 export default class LoginController {
   async post(req = Request, res = Response) {
     try {
-      const { email, senha } = req.body;
+      const { mail, password } = req.body;
 
-      const [data] = await db('employee').where('email', '=', email);
+      const [employee] = await db('employees').where('mail', '=', mail);
 
-      if (!data || data.cpf !== senha) {
+      if (!employee || employee.password !== password) {
         return res.status(401).json({
-          message: 'Usuário ou senha inválidos',
+          message: response.showMessage(401, 'MailOrPss'),
         });
       }
 
       const token = JWT.sign(
         {
-          id_employee: data.id,
-          email: data.email,
+          employee_id: employee.id,
+          mail: employee.mail,
         },
         'secreto',
         {
@@ -29,14 +32,14 @@ export default class LoginController {
       );
 
       res.status(200).json({
-        message: 'Autenticado com sucesso',
+        message: 'Successfully authenticated',
         token,
       });
     } catch (err) {
-      console.log(`Erro no login ${err}`);
+      console.log(`Erro in login ${err}`);
       res.status(500).json({
-        error: err,
-        message: 'Erro não esperado.',
+        error: true,
+        message: response.showMessage(500),
       });
     }
   }

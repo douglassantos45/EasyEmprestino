@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import KnowledgeAreasController from '../controllers/knowledgeAreas.controllers';
-import EmployeeController from '../controllers/employee.controllers';
+import EmployeeController from '../controllers/employees.controllers';
 import StudentController from '../controllers/student.controller';
 import PublicationController from '../controllers/publications.controllers';
 import LendsController from '../controllers/lends.controllers';

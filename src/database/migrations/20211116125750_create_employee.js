@@ -7,7 +7,7 @@ exports.up = function (knex) {
     table.string('name').notNullable();
     table.string('cpf').notNullable();
     table.string('rg').notNullable();
-    table.string('email').notNullable();
+    table.string('mail').notNullable();
     table.string('password').notNullable();
     table.string('phone').notNullable();
     table.string('cep').notNullable();

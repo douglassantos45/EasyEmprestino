@@ -4,17 +4,24 @@ import MessageResponse from '../utils/messagesReponse';
 
 const response = new MessageResponse();
 
-export default class KnowledgeAreasControllers {
+export default class EmployeeControllers {
   async index(req = Request, res = Response) {
     try {
-      const knowledge_areas = await db.select().from().table('knowledge_areas');
+      const employees = await db.select().table('employees');
 
+      if (employees.length < 0) {
+        return res.status(200).json({
+          error: false,
+          message: 'Empty employee list.',
+          data: employees,
+        });
+      }
       res.status(200).json({
         error: false,
-        data: knowledge_areas,
+        data: employees,
       });
     } catch (err) {
-      console.log(`Error in knowledge_areas_controller ${err}`);
+      console.log(`Err in employee controller: ${err}`);
       res.status(500).json({
         error: true,
         message: response.showMessage(500),
@@ -23,22 +30,21 @@ export default class KnowledgeAreasControllers {
   }
 
   async create(req = Request, res = Response) {
-    const { type } = req.body;
-    const employeeId = req.params.id;
+    const employee = req.body;
 
     const trx = await db.transaction();
 
     try {
-      await trx('knowledge_areas').insert({
-        type,
-        employee_id: employeeId,
-      });
+      await trx('employees').insert(employee);
       await trx.commit();
 
-      return res.status(201).send();
+      return res.status(201).json({
+        message: response.showMessage(201, 'Employee'),
+      });
     } catch (err) {
       await trx.rollback();
-      console.log(`Erro in knowledge_areas_controller ${err}`);
+
+      console.log(`Error in employees controller ${err}`);
       return res.status(500).json({
         error: true,
         message: response.showMessage(500),
