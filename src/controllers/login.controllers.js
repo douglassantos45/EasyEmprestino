@@ -16,7 +16,9 @@ export default class LoginController {
         });
       }
 
-      res.json(data);
+      res.status(200).json({
+        message: 'Autenticado com sucesso',
+      });
     } catch (err) {
       console.log(`Erro no login ${err}`);
       res.status(500).json({

@@ -4,7 +4,7 @@ import EmployeeController from '../controllers/employee.controllers';
 import StudentController from '../controllers/student.controller';
 import PublicationController from '../controllers/publications.controllers';
 import LendsController from '../controllers/lends.controllers';
-import LoginController from '../controllers/login';
+import LoginController from '../controllers/login.controllers';
 
 const routes = Router();
 
