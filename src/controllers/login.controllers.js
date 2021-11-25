@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
+import JWT from 'jsonwebtoken';
 import { Request, Response } from 'express';
 import db from '../database/connections';
 
@@ -16,8 +17,20 @@ export default class LoginController {
         });
       }
 
+      const token = JWT.sign(
+        {
+          id_employee: data.id,
+          email: data.email,
+        },
+        'secreto',
+        {
+          expiresIn: '1h',
+        },
+      );
+
       res.status(200).json({
         message: 'Autenticado com sucesso',
+        token,
       });
     } catch (err) {
       console.log(`Erro no login ${err}`);
