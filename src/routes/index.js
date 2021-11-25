@@ -4,6 +4,7 @@ import EmployeeController from '../controllers/employee.controllers';
 import StudentController from '../controllers/student.controller';
 import PublicationController from '../controllers/publications.controllers';
 import LendsController from '../controllers/lends.controllers';
+import LoginController from '../controllers/login';
 
 const routes = Router();
 
@@ -12,6 +13,7 @@ const employeeController = new EmployeeController();
 const studentController = new StudentController();
 const publicationController = new PublicationController();
 const leadsController = new LendsController();
+const loginController = new LoginController();
 
 /* ROUTES */
 routes.get('/knowledge_areas', knowledgeAreasController.index);
@@ -32,5 +34,8 @@ routes.post('/publications/:id', publicationController.create);
 /* Lends Controller */
 routes.get('/lends', leadsController.index);
 routes.post('/lends/:id', leadsController.create);
+
+/* Login Controller */
+routes.post('/login', loginController.post);
 
 export default routes;
