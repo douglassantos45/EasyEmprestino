@@ -4,15 +4,15 @@
 
 exports.up = function (knex) {
   return knex.schema.createTable('knowledge_areas', table => {
-    table.increments('id').primary();
-    table.string('tipo').notNullable();
+    table.uuid('id').primary();
+    table.string('type').notNullable();
 
     //Criando Relação com Funcionários
     table
       .integer('employee_id')
       .notNullable()
       .references('id')
-      .inTable('employee')
+      .inTable('employees')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
   });

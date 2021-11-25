@@ -4,17 +4,17 @@
 
 exports.up = function (knex) {
   return knex.schema.createTable('publications', table => {
-    table.increments('id').primary();
-    table.string('cota').notNullable();
-    table.string('titulo').notNullable();
-    table.string('autores').notNullable();
+    table.uuid('id').primary();
+    table.string('quotas').notNullable();
+    table.string('title').notNullable();
+    table.string('authors').notNullable();
 
     //Criando Relação com funcionário
     table
       .integer('employee_id')
       .notNullable()
       .references('id')
-      .inTable('employee')
+      .inTable('employees')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
 

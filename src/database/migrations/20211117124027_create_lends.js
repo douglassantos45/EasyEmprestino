@@ -4,16 +4,16 @@
 
 exports.up = function (knex) {
   return knex.schema.createTable('lends', table => {
-    table.increments('id').primary();
-    table.string('inicio').notNullable();
-    table.string('termino').notNullable();
+    table.uuid('id').primary();
+    table.string('start').notNullable();
+    table.string('end').notNullable();
 
     //Criando Relação com funcionário
     table
       .integer('employee_id')
       .notNullable()
       .references('id')
-      .inTable('employee')
+      .inTable('employees')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
     //Criando Relação com publicação
