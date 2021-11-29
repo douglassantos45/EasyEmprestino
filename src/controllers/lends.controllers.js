@@ -83,6 +83,29 @@ export default class LendsControllers {
           message: response.showMessage(404, 'Employee'),
         });
       }
+
+      const [student] = await trx('students').where('id', '=', studentId);
+      if (!student) {
+        await trx.commit();
+        return res.status(404).json({
+          error: false,
+          message: response.showMessage(404, 'Student'),
+        });
+      }
+
+      const [publication] = await trx('publications').where(
+        'id',
+        '=',
+        publicationsId,
+      );
+      if (!publication) {
+        await trx.commit();
+        return res.status(404).json({
+          error: false,
+          message: response.showMessage(404, 'Publication'),
+        });
+      }
+
       const [borrowedPublications] = await trx('lends').where(
         'lends.publication_id',
         '=',
