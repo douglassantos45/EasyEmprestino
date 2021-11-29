@@ -25,7 +25,7 @@ export default class LoginController {
           employee_id: employee.id,
           mail: employee.mail,
         },
-        'secreto',
+        process.env.SECRET_TOKEN,
         {
           expiresIn: '1h',
         },

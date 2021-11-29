@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import db from '../database/connections';
 import MessageResponse from '../utils/messagesReponse';
+import handleRandomNumber from '../utils/randomNumber';
 
 const response = new MessageResponse();
 
@@ -20,11 +21,20 @@ export default class StudentController {
   }
 
   async create(req = Request, res = Response) {
-    const student = req.body;
+    const { name, cpf, yearRegistration, phone, mail, cep, street } = req.body;
+
     const trx = await db.transaction();
 
     try {
-      await trx('students').insert(student);
+      await trx('students').insert({
+        name,
+        cpf,
+        registration: yearRegistration + handleRandomNumber(),
+        phone,
+        mail,
+        cep,
+        street,
+      });
 
       await trx.commit();
       return res.status(201).send();

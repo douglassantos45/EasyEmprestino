@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import db from '../database/connections';
 import MessageResponse from '../utils/messagesReponse';
+import handleRandomNumber from '../utils/randomNumber';
 
 const response = new MessageResponse();
 
@@ -30,12 +31,34 @@ export default class EmployeeControllers {
   }
 
   async create(req = Request, res = Response) {
-    const employee = req.body;
+    const {
+      name,
+      cpf,
+      rg,
+      yearRegistration,
+      mail,
+      password,
+      phone,
+      cep,
+      street,
+      charge,
+    } = req.body;
 
     const trx = await db.transaction();
 
     try {
-      await trx('employees').insert(employee);
+      await trx('employees').insert({
+        name,
+        cpf,
+        rg,
+        registration: yearRegistration + handleRandomNumber(),
+        mail,
+        password,
+        phone,
+        cep,
+        street,
+        charge,
+      });
       await trx.commit();
 
       return res.status(201).json({
