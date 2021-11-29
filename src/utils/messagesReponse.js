@@ -15,7 +15,9 @@ export default class MessageResponse {
           : (message = 'Unauthenticated.');
         break;
       case 404:
-        message = 'Data not found.';
+        string
+          ? (message = `Invalid ${string}.`)
+          : (message = `Data not found.`);
         break;
       case 500:
         message =

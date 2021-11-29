@@ -23,7 +23,7 @@ export default class EmployeeControllers {
         data: employees,
       });
     } catch (err) {
-      console.log(`Err in employee controller: ${err}`);
+      console.log(`Err in EMPLOYEE controller: ${err}`);
       res.status(500).json({
         error: true,
         message: response.showMessage(500),
@@ -71,7 +71,29 @@ export default class EmployeeControllers {
     } catch (err) {
       await trx.rollback();
 
-      console.log(`Error in employees controller ${err}`);
+      console.log(`Error in EMPLOYEE controller ${err}`);
+      return res.status(500).json({
+        error: true,
+        message: response.showMessage(500),
+      });
+    }
+  }
+
+  async update(req = Request, res = Response) {
+    const id = req.params.id;
+    const data = req.body;
+
+    try {
+      if (await db('employees').where('id', '=', id).update(data)) {
+        res.send();
+      } else {
+        res.status(404).json({
+          error: false,
+          message: response.showMessage(404),
+        });
+      }
+    } catch (err) {
+      console.log(`Error in EMPLOYEE controller ${err}`);
       return res.status(500).json({
         error: true,
         message: response.showMessage(500),

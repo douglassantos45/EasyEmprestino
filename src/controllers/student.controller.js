@@ -49,4 +49,26 @@ export default class StudentController {
       });
     }
   }
+
+  async update(req = Request, res = Response) {
+    const id = req.params.id;
+    const data = req.body;
+
+    try {
+      if (await db('students').where('id', '=', id).update(data)) {
+        res.send();
+      } else {
+        res.status(404).json({
+          error: false,
+          message: response.showMessage(404, 'Student'),
+        });
+      }
+    } catch (err) {
+      console.log(`Error in STUDENTS controller ${err}`);
+      return res.status(500).json({
+        error: true,
+        message: response.showMessage(500),
+      });
+    }
+  }
 }

@@ -60,7 +60,7 @@ export default class LendsControllers {
         data: publicationsResponse,
       });
     } catch (err) {
-      console.log(`Error in index lends controller ${err}`);
+      console.log(`Error in LENDS controller ${err}`);
       res.status(500).json({
         error: true,
         message: response.showMessage(500),
@@ -75,6 +75,14 @@ export default class LendsControllers {
     const newDateMs = handleDateConvertMs(new Date());
     const trx = await db.transaction();
     try {
+      const [employee] = await trx('employees').where('id', '=', employeeId);
+      if (!employee) {
+        await trx.commit();
+        return res.status(404).json({
+          error: false,
+          message: response.showMessage(404, 'Employee'),
+        });
+      }
       const [borrowedPublications] = await trx('lends').where(
         'lends.publication_id',
         '=',
@@ -89,11 +97,10 @@ export default class LendsControllers {
           publication_id: publicationsId,
           student_id: studentId,
         });
-        await trx.commit();
 
         res.status(201).send();
       } else {
-        res.status(204).json({
+        res.status(200).json({
           error: false,
           message: response.showMessage(
             204,
@@ -104,8 +111,53 @@ export default class LendsControllers {
       await trx.commit();
     } catch (err) {
       await trx.rollback();
-      console.log(`Error in index create controller ${err}`);
+      console.log(`Error in LENDS controller ${err}`);
       res.status(500).json({
+        error: true,
+        message: response.showMessage(500),
+      });
+    }
+  }
+
+  async remove(req = Request, res = Response) {
+    const id = req.params.id;
+
+    try {
+      if (await db('lends').where('id', '=', id).del()) {
+        res.send();
+      } else {
+        return res.status(404).json({
+          error: false,
+          message: response.showMessage(404),
+        });
+      }
+
+      res.send();
+    } catch (err) {
+      console.log(`Error in LENDS controller ${err}`);
+      res.status(500).json({
+        error: true,
+        message: response.showMessage(500),
+      });
+    }
+  }
+
+  async update(req = Request, res = Response) {
+    const id = req.params.id;
+    const data = req.body;
+
+    try {
+      if (await db('lends').where('id', '=', id).update(data)) {
+        res.send();
+      } else {
+        res.status(404).json({
+          error: false,
+          message: response.showMessage(404),
+        });
+      }
+    } catch (err) {
+      console.log(`Error in LENDS controller ${err}`);
+      return res.status(500).json({
         error: true,
         message: response.showMessage(500),
       });

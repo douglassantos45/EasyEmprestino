@@ -27,7 +27,7 @@ export default class LoginController {
         },
         process.env.SECRET_TOKEN,
         {
-          expiresIn: '1h',
+          expiresIn: '1d',
         },
       );
 
@@ -36,7 +36,7 @@ export default class LoginController {
         token,
       });
     } catch (err) {
-      console.log(`Erro in login ${err}`);
+      console.log(`Erro in LOGIN ${err}`);
       res.status(500).json({
         error: true,
         message: response.showMessage(500),
