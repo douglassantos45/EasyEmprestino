@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { uuid } from 'uuidv4';
 import db from '../database/connections';
 import MessageResponse from '../utils/messagesReponse';
 import handleRandomNumber from '../utils/randomNumber';
@@ -31,6 +32,8 @@ export default class EmployeeControllers {
   }
 
   async create(req = Request, res = Response) {
+    const data = req.body;
+
     const {
       name,
       cpf,
@@ -48,6 +51,7 @@ export default class EmployeeControllers {
 
     try {
       await trx('employees').insert({
+        id: uuid(),
         name,
         cpf,
         rg,

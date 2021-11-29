@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { uuid } from 'uuidv4';
 import db from '../database/connections';
 import MessageResponse from '../utils/messagesReponse';
 import handleRandomNumber from '../utils/randomNumber';
@@ -27,6 +28,7 @@ export default class StudentController {
 
     try {
       await trx('students').insert({
+        id: uuid(),
         name,
         cpf,
         registration: yearRegistration + handleRandomNumber(),
