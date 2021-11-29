@@ -4,7 +4,7 @@
 
 exports.up = function (knex) {
   return knex.schema.createTable('publications', table => {
-    table.string('id').notNullable();
+    table.increments('id').primary();
     table.string('quotas').notNullable();
     table.string('title').notNullable();
     table.string('authors').notNullable();
