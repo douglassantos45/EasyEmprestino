@@ -17,15 +17,6 @@ exports.up = function (knex) {
       .inTable('employees')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
-
-    //Criando Relação com Área do Conhecimento
-    table
-      .integer('knowledge_area_id')
-      .notNullable()
-      .references('id')
-      .inTable('knowledge_areas')
-      .onUpdate('CASCADE')
-      .onDelete('CASCADE');
   });
 };
 

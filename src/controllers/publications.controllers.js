@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 import { Request, Response } from 'express';
 import db from '../database/connections';
 import MessageResponse from '../utils/messagesReponse';
@@ -23,7 +24,7 @@ export default class PublicationController {
   }
 
   async create(req = Request, res = Response) {
-    const { quotas, title, authors, knowledgeAreaId } = req.body;
+    const { quotas, title, authors, knowledgeArea } = req.body;
     const employeeId = req.params.id;
     const trx = await db.transaction();
 
@@ -36,13 +37,27 @@ export default class PublicationController {
           message: response.showMessage(404, 'Employee'),
         });
       }
-      await trx('publications').insert({
+      const insertedPublicationsIds = await trx('publications').insert({
         quotas,
         title,
         authors,
         employee_id: employeeId,
-        knowledge_area_id: knowledgeAreaId,
       });
+
+      const [publicationId] = insertedPublicationsIds;
+
+      const publicationsKnowledgeAreas = knowledgeArea.map(
+        knowledgeAreaItem => {
+          return {
+            publication_id: publicationId,
+            knowledge_area_id: knowledgeAreaItem.id,
+          };
+        },
+      );
+      console.log(publicationsKnowledgeAreas);
+      await trx('publications_knowledgeAreas').insert(
+        publicationsKnowledgeAreas,
+      );
 
       await trx.commit();
 

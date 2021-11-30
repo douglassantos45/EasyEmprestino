@@ -10,13 +10,50 @@ const response = new MessageResponse();
 export default class LendsControllers {
   async index(req = Request, res = Response) {
     try {
-      const publications = await db('lends')
-        .join('publications', 'lends.publication_id', '=', 'publications.id')
+      const lendsPublications = await db('publications_knowledgeAreas')
+        .whereExists(function () {
+          this.select('publications.*')
+            .from('publications')
+            .whereRaw(
+              '`publications`.`id` = `publications_knowledgeAreas`.`publication_id`',
+            )
+            .whereRaw(
+              '`publications`.`id` = `publications_knowledgeAreas`.`knowledge_area_id`',
+            );
+        })
+        /* .where('publications.id', '=', subject) */
+        .join(
+          'publications',
+          'publications_knowledgeAreas.publication_id',
+          '=',
+          'publications.id',
+        )
+        .join(
+          'knowledge_areas',
+          'publications_knowledgeAreas.knowledge_area_id',
+          '=',
+          'knowledge_areas.id',
+        )
+        .select(['publications.*', 'knowledge_areas.*']);
+
+      /* const publications = await db('lends')
         .join('employees', 'lends.employee_id', '=', 'employees.id')
         .join('students', 'lends.student_id', '=', 'students.id')
         .join(
+          'publications_knowledgeAreas',
+          'lends.publication_id',
+          '=',
+          'publications_knowledgeAreas.id',
+        )
+        .join(
+          'publications',
+          'publications_knowledgeAreas.publication_id',
+          '=',
+          'publications.id',
+        )
+        .join(
           'knowledge_areas',
-          'publications.knowledge_area_id',
+          'publications_knowledgeAreas.knowledge_area_id',
           '=',
           'knowledge_areas.id',
         )
@@ -30,7 +67,9 @@ export default class LendsControllers {
           'lends.end',
         ]);
 
+      console.log(publications);
       const publicationsResponse = publications.map(response => {
+        console.log(response.type);
         const newResponse = {
           student: {
             name: response.student,
@@ -53,11 +92,13 @@ export default class LendsControllers {
         };
 
         return newResponse;
-      });
+      }); */
+
+      console.log(lendsPublications);
 
       res.status(200).json({
         error: false,
-        data: publicationsResponse,
+        data: lendsPublications,
       });
     } catch (err) {
       console.log(`Error in LENDS controller ${err}`);

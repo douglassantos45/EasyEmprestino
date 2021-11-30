@@ -17,14 +17,20 @@ const leadsController = new LendsController();
 const loginController = new LoginController();
 
 /* ROUTES */
-routes.get('/knowledge_areas', authToken, knowledgeAreasController.index);
-routes.post('/knowledge_areas/:id', authToken, knowledgeAreasController.create);
+routes.get('/knowledge_areas', /* authToken, */ knowledgeAreasController.index);
+routes.post(
+  '/knowledge_areas/:id',
+  /* authToken, */ knowledgeAreasController.create,
+);
 routes.delete(
   '/knowledge_areas/:id',
-  authToken,
+  /* authToken, */
   knowledgeAreasController.remove,
 );
-routes.put('/knowledge_areas/:id', authToken, knowledgeAreasController.update);
+routes.put(
+  '/knowledge_areas/:id',
+  /* authToken, */ knowledgeAreasController.update,
+);
 
 /* Employee Controller */
 routes.get('/employees', employeeController.index);
@@ -32,21 +38,24 @@ routes.post('/employees', employeeController.create);
 routes.put('/employees/:id', employeeController.update);
 
 /* Student Controller */
-routes.get('/students', authToken, studentController.index);
-routes.post('/students', authToken, studentController.create);
-routes.put('/students/:id', authToken, studentController.update);
+routes.get('/students', /* authToken, */ studentController.index);
+routes.post('/students', /* authToken, */ studentController.create);
+routes.put('/students/:id', /* authToken, */ studentController.update);
 
 /* Publication Controller */
-routes.get('/publications', authToken, publicationController.index);
-routes.post('/publications/:id', authToken, publicationController.create);
-routes.delete('/publications/:id', authToken, publicationController.remove);
-routes.put('/publications/:id', authToken, publicationController.update);
+routes.get('/publications', /* authToken, */ publicationController.index);
+routes.post('/publications/:id', /* authToken, */ publicationController.create);
+routes.delete(
+  '/publications/:id',
+  /* authToken, */ publicationController.remove,
+);
+routes.put('/publications/:id', /* authToken, */ publicationController.update);
 
 /* Lends Controller */
-routes.get('/lends', authToken, leadsController.index);
-routes.post('/lends/:id', authToken, leadsController.create);
-routes.delete('/lends/:id', authToken, leadsController.create);
-routes.put('/lends/:id', authToken, leadsController.update);
+routes.get('/lends', /* authToken, */ leadsController.index);
+routes.post('/lends/:id', /* authToken, */ leadsController.create);
+routes.delete('/lends/:id', /* authToken, */ leadsController.create);
+routes.put('/lends/:id', /* authToken, */ leadsController.update);
 
 /* Login Controller */
 routes.post('/login', loginController.post);

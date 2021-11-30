@@ -32,8 +32,6 @@ export default class EmployeeControllers {
   }
 
   async create(req = Request, res = Response) {
-    const data = req.body;
-
     const {
       name,
       cpf,

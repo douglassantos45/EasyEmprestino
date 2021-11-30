@@ -21,7 +21,7 @@ exports.up = function (knex) {
       .integer('publication_id')
       .notNullable()
       .references('id')
-      .inTable('publications')
+      .inTable('publications_knowledgeAreas')
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
     //Criando Relação com estudante
