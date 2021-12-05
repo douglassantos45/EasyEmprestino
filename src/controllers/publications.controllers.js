@@ -43,6 +43,7 @@ export default class PublicationController {
           'publications_knowledgeAreas.publication_id',
           'publications.id',
         )
+        .where('publication_id', '=', id)
         .join(
           'knowledge_areas',
           'publications_knowledgeAreas.knowledge_area_id',
