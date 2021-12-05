@@ -10,31 +10,24 @@ const response = new MessageResponse();
 export default class LendsControllers {
   async index(req = Request, res = Response) {
     try {
+      /*       SELECT O.NOME, P.TITULO, FROM Orientador AS O
+INNER JOIN Projeto_has_Orientador AS P ON (P.idOrientador = O.idOrientador)
+WHERE P.idOrientador = <id do orientador>
+ */
       const lendsPublications = await db('publications_knowledgeAreas')
-        .whereExists(function () {
-          this.select('publications.*')
-            .from('publications')
-            .whereRaw(
-              '`publications`.`id` = `publications_knowledgeAreas`.`publication_id`',
-            )
-            .whereRaw(
-              '`publications`.`id` = `publications_knowledgeAreas`.`knowledge_area_id`',
-            );
-        })
-        /* .where('publications.id', '=', subject) */
-        .join(
-          'publications',
-          'publications_knowledgeAreas.publication_id',
-          '=',
-          'publications.id',
-        )
         .join(
           'knowledge_areas',
           'publications_knowledgeAreas.knowledge_area_id',
           '=',
           'knowledge_areas.id',
         )
-        .select(['publications.*', 'knowledge_areas.*']);
+        .join(
+          'publications',
+          'publications_knowledgeAreas.publication_id',
+          '=',
+          'publications.id',
+        )
+        .select(['publications.*', 'knowledge_areas.type']);
 
       /* const publications = await db('lends')
         .join('employees', 'lends.employee_id', '=', 'employees.id')

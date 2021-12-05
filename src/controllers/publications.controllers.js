@@ -8,15 +8,60 @@ const response = new MessageResponse();
 export default class PublicationController {
   async index(req = Request, res = Response) {
     try {
-      const publications = await db.select().from().table('publications');
+      const publications = await db('publications');
 
-      res.status(200).json({
+      publications.map(publication => delete publication.employee_id);
+
+      return res.status(200).json({
         error: false,
         data: publications,
       });
     } catch (err) {
       console.log(`Error in PUBLICATIONS controller ${err}`);
       res.status(500).json({
+        error: true,
+        message: response.showMessage(500),
+      });
+    }
+  }
+
+  async show(req = Request, res = Response) {
+    const { id } = req.params;
+    try {
+      const [publication] = await db('publications').where('id', '=', id);
+
+      if (!publication) {
+        return res.status(404).json({
+          error: false,
+          message: response.showMessage(404, 'Publication'),
+        });
+      }
+
+      const knowledgeAreas = await db('publications_knowledgeAreas')
+        .join(
+          'publications',
+          'publications_knowledgeAreas.publication_id',
+          'publications.id',
+        )
+        .join(
+          'knowledge_areas',
+          'publications_knowledgeAreas.knowledge_area_id',
+          'knowledge_areas.id',
+        )
+        .select(['knowledge_areas.type']);
+
+      const pub = {
+        id: publication.id,
+        title: publication.title,
+        authors: publication.authors,
+        quotas: publication.quotas,
+        knowledge_areas: knowledgeAreas,
+      };
+
+      return res.status(200).json(pub);
+    } catch (err) {
+      console.log(`Erro in PUBLICATIONS controller ${err}`);
+      return res.status(500).json({
         error: true,
         message: response.showMessage(500),
       });

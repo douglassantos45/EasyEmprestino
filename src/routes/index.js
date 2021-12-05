@@ -44,6 +44,7 @@ routes.put('/students/:id', /* authToken, */ studentController.update);
 
 /* Publication Controller */
 routes.get('/publications', /* authToken, */ publicationController.index);
+routes.get('/publications/:id', /* authToken, */ publicationController.show);
 routes.post('/publications/:id', /* authToken, */ publicationController.create);
 routes.delete(
   '/publications/:id',
