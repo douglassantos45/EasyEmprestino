@@ -38,6 +38,20 @@ export default class KnowledgeAreasControllers {
         });
       }
 
+      const [knowledgeArea] = await trx('knowledge_areas').where(
+        'type',
+        '=',
+        type,
+      );
+
+      if (knowledgeArea) {
+        await trx.commit();
+        return res.status(422).json({
+          error: false,
+          message: response.showMessage(422, type),
+        });
+      }
+
       await trx('knowledge_areas').insert({
         type,
         employee_id: employeeId,

@@ -19,6 +19,9 @@ export default class MessageResponse {
           ? (message = `Invalid ${string}.`)
           : (message = `Data not found.`);
         break;
+      case 422:
+        message = `${string} has already been registered.`;
+        break;
       case 500:
         message =
           'An unexpected problem has occurred: An unexpected problem has occurred in the system.';

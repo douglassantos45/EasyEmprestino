@@ -48,12 +48,36 @@ export default class EmployeeControllers {
     const trx = await db.transaction();
 
     try {
+      const [employee] = await trx('employees')
+        .where('mail', '=', mail)
+        .orWhere('cpf', '=', cpf);
+
+      if (employee) {
+        await trx.commit();
+        return res.status(422).json({
+          error: false,
+          message: response.showMessage(404, 'CPF or Mail'),
+        });
+      }
+
+      let registration = yearRegistration + handleRandomNumber();
+
+      let [existsOrError] = await trx('employees').where(
+        'registration',
+        '=',
+        registration,
+      );
+
+      if (existsOrError) {
+        registration = yearRegistration + handleRandomNumber();
+      }
+
       await trx('employees').insert({
         id: uuid(),
         name,
         cpf,
         rg,
-        registration: yearRegistration + handleRandomNumber(),
+        registration,
         mail,
         password,
         phone,

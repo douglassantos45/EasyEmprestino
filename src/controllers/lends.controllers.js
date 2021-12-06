@@ -10,52 +10,57 @@ const response = new MessageResponse();
 export default class LendsControllers {
   async index(req = Request, res = Response) {
     try {
-      const lendsPublication = await db('lends')
+      const publications = await db('lends')
         .join('publications', 'lends.publication_id', '=', 'publications.id')
         .join('employees', 'lends.employee_id', '=', 'employees.id')
         .join('students', 'lends.student_id', '=', 'students.id')
-        .select(['publications.*', 'employees.*', 'students.*']);
+        .select([
+          { student_name: 'students.name' },
+          { student_registration: 'students.registration' },
+          { student_mail: 'students.mail' },
+          { employee_name: 'employees.name' },
+          'publications.*',
+          'lends.id',
+          'lends.start',
+          'lends.end',
+        ]);
 
-      if (!lendsPublication) {
+      const publicationsResponse = publications.map(response => {
+        const newResponse = {
+          id: response.id,
+          student: {
+            name: response.student_name,
+            registration: response.student_registration,
+            mail: response.student_mail,
+          },
+          publication: {
+            quota: response.quota,
+            title: response.title,
+            authors: response.authors,
+            knowledge_areas: response.type,
+          },
+          employee: {
+            name: response.employee_name,
+          },
+          lends: {
+            start: msToDate(response.start),
+            end: msToDate(response.end),
+          },
+        };
+
+        return newResponse;
+      });
+
+      if (!publicationsResponse) {
         return res.status(404).json({
           error: false,
           message: response.showMessage(404, 'Publication'),
         });
       }
-      const publication = await db('publications_knowledgeAreas')
-        .join(
-          'publications',
-          'publications_knowledgeAreas.publication_id',
-          '=',
-          'publications.id',
-        )
-        .join(
-          'knowledge_areas',
-          'publications_knowledgeAreas.knowledge_area_id',
-          '=',
-          'knowledge_areas.id',
-        )
-        .select(['knowledge_areas.type']);
-      console.log(publication);
-      const pub = lendsPublication.map(function (lP) {
-        const response = {
-          publication: {
-            id: lP.id,
-            title: lP.title,
-            authors: lP.authors,
-            quotas: lP.quotas,
-          },
-
-          employee: lP.name,
-          knowledge_areas: publication,
-        };
-
-        return response;
-      });
 
       return res.status(200).json({
         error: false,
-        data: pub,
+        data: publicationsResponse,
       });
     } catch (err) {
       console.log(`Error in LENDS controller ${err}`);
@@ -121,12 +126,9 @@ export default class LendsControllers {
 
         res.status(201).send();
       } else {
-        res.status(200).json({
+        res.status(422).json({
           error: false,
-          message: response.showMessage(
-            204,
-            'This publication has already been borrowed',
-          ),
+          message: response.showMessage(422, 'Publication'),
         });
       }
       await trx.commit();

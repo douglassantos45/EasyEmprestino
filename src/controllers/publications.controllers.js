@@ -100,10 +100,22 @@ export default class PublicationController {
           };
         },
       );
-      console.log(publicationsKnowledgeAreas);
+
       await trx('publications_knowledgeAreas').insert(
         publicationsKnowledgeAreas,
       );
+
+      const [publication] = await trx('publications')
+        .where('title', '=', title)
+        .orWhere('quotas', '=', quotas);
+
+      if (publication) {
+        await trx.commit();
+        return res.status(422).json({
+          error: false,
+          message: response.showMessage(422, title),
+        });
+      }
 
       await trx.commit();
 

@@ -27,11 +27,34 @@ export default class StudentController {
     const trx = await db.transaction();
 
     try {
+      const [student] = await trx('students')
+        .where('cpf', '=', cpf)
+        .orWhere('mail', '=', mail);
+
+      if (student) {
+        await trx.commit();
+        return res.status(422).json({
+          error: false,
+          message: response.showMessage(404, 'CPF or Mail'),
+        });
+      }
+      let registration = yearRegistration + handleRandomNumber();
+
+      let [existsOrError] = await trx('students').where(
+        'registration',
+        '=',
+        registration,
+      );
+
+      if (existsOrError) {
+        registration = yearRegistration + handleRandomNumber();
+      }
+
       await trx('students').insert({
         id: uuid(),
         name,
         cpf,
-        registration: yearRegistration + handleRandomNumber(),
+        registration,
         phone,
         mail,
         cep,
