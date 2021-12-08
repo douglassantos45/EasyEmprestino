@@ -18,6 +18,10 @@ const loginController = new LoginController();
 
 /* ROUTES */
 routes.get('/knowledge_areas', /* authToken, */ knowledgeAreasController.index);
+routes.get(
+  '/knowledge_areas/:id',
+  /* authToken, */ knowledgeAreasController.show,
+);
 routes.post(
   '/knowledge_areas/:id',
   /* authToken, */ knowledgeAreasController.create,
@@ -34,11 +38,13 @@ routes.put(
 
 /* Employee Controller */
 routes.get('/employees', employeeController.index);
+routes.get('/employees/:id', employeeController.show);
 routes.post('/employees', employeeController.create);
 routes.put('/employees/:id', employeeController.update);
 
 /* Student Controller */
 routes.get('/students', /* authToken, */ studentController.index);
+routes.get('/students/:id', /* authToken, */ studentController.show);
 routes.post('/students', /* authToken, */ studentController.create);
 routes.put('/students/:id', /* authToken, */ studentController.update);
 

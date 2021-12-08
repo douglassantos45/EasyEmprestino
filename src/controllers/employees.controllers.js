@@ -14,13 +14,59 @@ export default class EmployeeControllers {
       if (employees.length < 0) {
         return res.status(200).json({
           error: false,
-          message: 'Empty employee list.',
+          message: response.showMessage(404),
           data: employees,
         });
       }
       res.status(200).json({
         error: false,
         data: employees,
+      });
+    } catch (err) {
+      console.log(`Err in EMPLOYEE controller: ${err}`);
+      res.status(500).json({
+        error: true,
+        message: response.showMessage(500),
+      });
+    }
+  }
+
+  async show(req = Request, res = Response) {
+    const { id } = req.params;
+
+    try {
+      const [employee] = await db('employees').where('id', '=', id);
+
+      if (!employee) {
+        return res.status(404).json({
+          error: false,
+          message: response.showMessage(404),
+        });
+      }
+
+      const publication = await db('publications')
+        .join('employees', 'publications.employee_id', 'employees.id')
+        .where('employee_id', '=', id)
+        .select([
+          'publications.id',
+          'publications.quotas',
+          'publications.title',
+        ]);
+
+      const employeePub = {
+        id: employee.id,
+        name: employee.name,
+        registration: employee.registration,
+        mail: employee.mail,
+        phone: employee.phone,
+        cep: employee.cep,
+        street: employee.street,
+        publications: publication,
+      };
+
+      return res.status(200).json({
+        error: false,
+        data: employeePub,
       });
     } catch (err) {
       console.log(`Err in EMPLOYEE controller: ${err}`);

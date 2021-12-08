@@ -1,5 +1,5 @@
 export default class MessageResponse {
-  showMessage(status = undefined, string = 'Data') {
+  showMessage(status = undefined, string) {
     let message = '';
 
     switch (status) {

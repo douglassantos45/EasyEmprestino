@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+/* eslint-disable arrow-parens */
 import { Request, Response } from 'express';
 import db from '../database/connections';
 
@@ -25,7 +27,27 @@ export default class LendsControllers {
           'lends.end',
         ]);
 
+      const knowledgeAreas = await db('publications_knowledgeAreas')
+        .join(
+          'publications',
+          'publications_knowledgeAreas.publication_id',
+          'publications.id',
+        )
+        .join(
+          'knowledge_areas',
+          'publications_knowledgeAreas.knowledge_area_id',
+          'knowledge_areas.id',
+        )
+        .select(['publications.id', 'knowledge_areas.type']);
+
       const publicationsResponse = publications.map(response => {
+        const knowledgeArea = knowledgeAreas.filter(value => {
+          if (value.id === response.id) {
+            const type = value.type;
+            return type;
+          }
+        });
+        /* knowledgeArea.map(res => delete res.id); */
         const newResponse = {
           id: response.id,
           student: {
@@ -37,7 +59,7 @@ export default class LendsControllers {
             quota: response.quota,
             title: response.title,
             authors: response.authors,
-            knowledge_areas: response.type,
+            knowledgeAreas: knowledgeArea.map(res => res.type),
           },
           employee: {
             name: response.employee_name,

@@ -7,11 +7,52 @@ const response = new MessageResponse();
 export default class KnowledgeAreasControllers {
   async index(req = Request, res = Response) {
     try {
-      const knowledge_areas = await db.select().from().table('knowledge_areas');
+      const knowledgeAreas = await db('knowledge_areas').select([
+        'knowledge_areas.id',
+        'knowledge_areas.type',
+      ]);
 
       res.status(200).json({
         error: false,
-        data: knowledge_areas,
+        data: knowledgeAreas,
+      });
+    } catch (err) {
+      console.log(`Error in KNOWLEDGE_AREAS controller ${err}`);
+      res.status(500).json({
+        error: true,
+        message: response.showMessage(500),
+      });
+    }
+  }
+
+  async show(req = Request, res = Response) {
+    const { id } = req.params;
+    try {
+      const knowledgeAreas = await db('knowledge_areas')
+        .join('employees', 'knowledge_areas.employee_id', 'employees.id')
+        .where('knowledge_areas.id', '=', id)
+        .select([
+          'knowledge_areas.*',
+          'employees.name',
+          'employees.registration',
+        ]);
+
+      const knowledgeAreasEp = knowledgeAreas.map(knowledgeAreaEp => {
+        const response = {
+          id: knowledgeAreaEp.id,
+          type: knowledgeAreaEp.type,
+          employee: {
+            name: knowledgeAreaEp.name,
+            registration: knowledgeAreaEp.registration,
+          },
+        };
+
+        return response;
+      });
+
+      res.status(200).json({
+        error: false,
+        data: knowledgeAreasEp,
       });
     } catch (err) {
       console.log(`Error in KNOWLEDGE_AREAS controller ${err}`);

@@ -10,11 +10,39 @@ export default class PublicationController {
     try {
       const publications = await db('publications');
 
-      publications.map(publication => delete publication.employee_id);
+      const knowledgeAreas = await db('publications_knowledgeAreas')
+        .join(
+          'publications',
+          'publications_knowledgeAreas.publication_id',
+          'publications.id',
+        )
+        .join(
+          'knowledge_areas',
+          'publications_knowledgeAreas.knowledge_area_id',
+          'knowledge_areas.id',
+        )
+        .select(['publications.id', 'knowledge_areas.type']);
+
+      const pb = publications.map(publication => {
+        const knowledgeArea = knowledgeAreas.filter(value => {
+          if (value.id === publication.id) {
+            const type = value.type;
+            return type;
+          }
+        });
+
+        return {
+          id: publication.id,
+          quota: publication.quota,
+          title: publication.title,
+          authors: publication.authors,
+          knowledgeAreas: knowledgeArea.map(res => res.type),
+        };
+      });
 
       return res.status(200).json({
         error: false,
-        data: publications,
+        data: pb,
       });
     } catch (err) {
       console.log(`Error in PUBLICATIONS controller ${err}`);
@@ -56,7 +84,7 @@ export default class PublicationController {
         title: publication.title,
         authors: publication.authors,
         quotas: publication.quotas,
-        knowledge_areas: knowledgeAreas,
+        knowledgeAreas,
       };
 
       return res.status(200).json(pub);
