@@ -10,6 +10,28 @@ export default class PublicationController {
     try {
       const publications = await db('publications');
 
+      const authors = await db('publications_authors')
+        .join(
+          'publications',
+          'publications_authors.publication_id',
+          'publications.id',
+        )
+        .join('authors', 'publications_authors.author_id', 'authors.id')
+        .select(['publications.id', 'authors.name']);
+
+      const pbCompanys = await db('publications_publishingCompany')
+        .join(
+          'publications',
+          'publications_publishingCompany.publication_id',
+          'publications.id',
+        )
+        .join(
+          'publishing_company',
+          'publications_publishingCompany.pb_company_id',
+          'publishing_company.id',
+        )
+        .select(['publications.id', 'publishing_company.name']);
+
       const knowledgeAreas = await db('publications_knowledgeAreas')
         .join(
           'publications',
@@ -30,12 +52,25 @@ export default class PublicationController {
             return type;
           }
         });
+        const author = authors.filter(value => {
+          if (value.id === publication.id) {
+            const name = value.name;
+            return name;
+          }
+        });
+        const pbCompany = pbCompanys.filter(value => {
+          if (value.id === publication.id) {
+            const name = value.name;
+            return name;
+          }
+        });
 
         return {
           id: publication.id,
           quota: publication.quota,
           title: publication.title,
-          authors: publication.authors,
+          authors: author.map(res => res.name),
+          publishingCompany: pbCompany.map(res => res.name),
           knowledgeAreas: knowledgeArea.map(res => res.type),
         };
       });
@@ -98,29 +133,39 @@ export default class PublicationController {
   }
 
   async create(req = Request, res = Response) {
-    const { quotas, title, authors, knowledgeArea } = req.body;
+    const { quotas, title, authors, pbCompanyId, knowledgeAreas } = req.body;
     const employeeId = req.params.id;
     const trx = await db.transaction();
 
     try {
       const [employee] = await trx('employees').where('id', '=', employeeId);
       if (!employee) {
-        await trx.commit();
+        await trx.rollback();
         return res.status(404).json({
           error: false,
           message: response.showMessage(404, 'Employee'),
         });
       }
+      const [publication] = await trx('publications')
+        .where('title', '=', title)
+        .orWhere('quotas', '=', quotas);
+
+      if (publication) {
+        await trx.rollback();
+        return res.status(422).json({
+          error: false,
+          message: response.showMessage(422, title),
+        });
+      }
       const insertedPublicationsIds = await trx('publications').insert({
         quotas,
         title,
-        authors,
         employee_id: employeeId,
       });
 
       const [publicationId] = insertedPublicationsIds;
 
-      const publicationsKnowledgeAreas = knowledgeArea.map(
+      const publicationsKnowledgeAreas = knowledgeAreas.map(
         knowledgeAreaItem => {
           return {
             publication_id: publicationId,
@@ -129,21 +174,21 @@ export default class PublicationController {
         },
       );
 
+      const publicationsAuthors = authors.map(author => {
+        return {
+          publication_id: publicationId,
+          author_id: author.id,
+        };
+      });
+
+      await trx('publications_authors').insert(publicationsAuthors);
+      await trx('publications_publishingCompany').insert({
+        publication_id: publicationId,
+        pb_company_id: pbCompanyId,
+      });
       await trx('publications_knowledgeAreas').insert(
         publicationsKnowledgeAreas,
       );
-
-      const [publication] = await trx('publications')
-        .where('title', '=', title)
-        .orWhere('quotas', '=', quotas);
-
-      if (publication) {
-        await trx.commit();
-        return res.status(422).json({
-          error: false,
-          message: response.showMessage(422, title),
-        });
-      }
 
       await trx.commit();
 

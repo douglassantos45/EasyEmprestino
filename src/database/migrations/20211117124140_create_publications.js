@@ -7,7 +7,6 @@ exports.up = function (knex) {
     table.increments('id').primary();
     table.string('quotas').notNullable();
     table.string('title').notNullable();
-    table.string('authors').notNullable();
 
     //Criando Relação com funcionário
     table

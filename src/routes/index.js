@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import KnowledgeAreasController from '../controllers/knowledgeAreas.controllers';
 import EmployeeController from '../controllers/employees.controllers';
-import StudentController from '../controllers/student.controller';
+import StudentController from '../controllers/students.controllers';
 import PublicationController from '../controllers/publications.controllers';
+import AuthorsController from '../controllers/authors.controllers';
+import PublishingCompanyController from '../controllers/publishingCompany.controllers';
 import LendsController from '../controllers/lends.controllers';
 import LoginController from '../controllers/login.controllers';
 import authToken from '../middlewares/authenticate';
@@ -13,10 +15,15 @@ const knowledgeAreasController = new KnowledgeAreasController();
 const employeeController = new EmployeeController();
 const studentController = new StudentController();
 const publicationController = new PublicationController();
+const authorsController = new AuthorsController();
+const publishingCompanyController = new PublishingCompanyController();
 const leadsController = new LendsController();
 const loginController = new LoginController();
 
-/* ROUTES */
+/*
+ * ROUTES
+ */
+
 routes.get('/knowledge_areas', /* authToken, */ knowledgeAreasController.index);
 routes.get(
   '/knowledge_areas/:id',
@@ -57,6 +64,16 @@ routes.delete(
   /* authToken, */ publicationController.remove,
 );
 routes.put('/publications/:id', /* authToken, */ publicationController.update);
+
+/* Authors Controller */
+routes.get('/authors', authorsController.index);
+routes.post('/authors', authorsController.create);
+routes.put('/authors/:id', authorsController.update);
+
+/* Publishing Company Controller */
+routes.get('/publishing_company', publishingCompanyController.index);
+routes.post('/publishing_company', publishingCompanyController.create);
+routes.put('/publishing_company/:id', publishingCompanyController.update);
 
 /* Lends Controller */
 routes.get('/lends', /* authToken, */ leadsController.index);

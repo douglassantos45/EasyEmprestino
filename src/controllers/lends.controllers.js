@@ -27,6 +27,28 @@ export default class LendsControllers {
           'lends.end',
         ]);
 
+      const authors = await db('publications_authors')
+        .join(
+          'publications',
+          'publications_authors.publication_id',
+          'publications.id',
+        )
+        .join('authors', 'publications_authors.author_id', 'authors.id')
+        .select(['publications.id', 'authors.name']);
+
+      const pbCompanys = await db('publications_publishingCompany')
+        .join(
+          'publications',
+          'publications_publishingCompany.publication_id',
+          'publications.id',
+        )
+        .join(
+          'publishing_company',
+          'publications_publishingCompany.pb_company_id',
+          'publishing_company.id',
+        )
+        .select(['publications.id', 'publishing_company.name']);
+
       const knowledgeAreas = await db('publications_knowledgeAreas')
         .join(
           'publications',
@@ -47,8 +69,20 @@ export default class LendsControllers {
             return type;
           }
         });
-        /* knowledgeArea.map(res => delete res.id); */
-        const newResponse = {
+        const author = authors.filter(value => {
+          if (value.id === response.id) {
+            const name = value.name;
+            return name;
+          }
+        });
+        const pbCompany = pbCompanys.filter(value => {
+          if (value.id === response.id) {
+            const name = value.name;
+            return name;
+          }
+        });
+
+        return {
           id: response.id,
           student: {
             name: response.student_name,
@@ -58,7 +92,8 @@ export default class LendsControllers {
           publication: {
             quota: response.quota,
             title: response.title,
-            authors: response.authors,
+            authors: author.map(res => res.name),
+            publishingCompany: pbCompany.map(res => res.name),
             knowledgeAreas: knowledgeArea.map(res => res.type),
           },
           employee: {
@@ -69,8 +104,6 @@ export default class LendsControllers {
             end: msToDate(response.end),
           },
         };
-
-        return newResponse;
       });
 
       if (!publicationsResponse) {
