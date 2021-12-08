@@ -170,23 +170,24 @@ export default class LendsControllers {
         publicationsId,
       );
 
-      if (!borrowedPublications) {
-        await trx('lends').insert({
-          start: newDateMs,
-          end: newDateMs + 604800000,
-          employee_id: employeeId,
-          publication_id: publicationsId,
-          student_id: studentId,
-        });
-
-        res.status(201).send();
-      } else {
-        res.status(422).json({
+      if (borrowedPublications) {
+        await trx.rollback();
+        return res.status(422).json({
           error: false,
           message: response.showMessage(422, 'Publication'),
         });
       }
+
+      await trx('lends').insert({
+        start: newDateMs,
+        end: newDateMs + 604800000,
+        employee_id: employeeId,
+        publication_id: publicationsId,
+        student_id: studentId,
+      });
+
       await trx.commit();
+      return res.status(201).send();
     } catch (err) {
       await trx.rollback();
       console.log(`Error in LENDS controller ${err}`);
